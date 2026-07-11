@@ -599,6 +599,7 @@ h1.big-title{
     <div class="host-sep"></div>
     <button class="host-btn primary" id="btnTimer" onclick="toggleTimer()">▶ تشغيل المؤقت</button>
     <button class="host-btn" onclick="resetTimer()">↺ إعادة</button>
+    <button class="host-btn" style="background:rgba(196,85,77,.2); border-color:var(--danger); color:var(--ivory);" onclick="resetTournament()" title="تصفير المسابقة والبدء من جديد">🔄 لعبة جديدة</button>
     <div class="spacer"></div>
     <div class="kbd-hints">
       <kbd>مسافة</kbd> مؤقت · <kbd>Enter</kbd> التالي · <kbd>→</kbd>/<kbd>←</kbd> نقطة · <kbd>1</kbd><kbd>2</kbd> جرس · <kbd>3</kbd><kbd>4</kbd> بطاقة · <kbd>R</kbd> إعادة · <kbd>F</kbd> ملء الشاشة
@@ -653,6 +654,115 @@ const S = {
 };
 const $ = id => document.getElementById(id);
 
+/* ================= الذاكرة المؤقتة (Persisted State) ================= */
+function saveState() {
+  if (!S.gameStarted) return;
+  const stateCopy = {
+    teams: S.teams,
+    round: S.round,
+    turn: S.turn,
+    bellLock: S.bellLock,
+    timer: {
+      dur: S.timer.dur,
+      left: S.timer.left,
+      running: false
+    },
+    poemState: S.poemState,
+    topicIdx: S.topicIdx,
+    wordIdx: S.wordIdx,
+    done: {
+      poems: Array.from(S.done.poems),
+      topics: Array.from(S.done.topics),
+      words: Array.from(S.done.words)
+    },
+    gameStarted: S.gameStarted,
+    lastScreen: S.lastScreen,
+    currentScreen: document.querySelector('.screen.active')?.id || 's-setup'
+  };
+  localStorage.setItem('bawsala_duel_state', JSON.stringify(stateCopy));
+}
+
+function loadState() {
+  const data = localStorage.getItem('bawsala_duel_state');
+  if (!data) return;
+  try {
+    const saved = JSON.parse(data);
+    if (!saved || !saved.gameStarted) return;
+    
+    S.teams = saved.teams;
+    S.round = saved.round;
+    S.turn = saved.turn;
+    S.bellLock = saved.bellLock;
+    S.timer.dur = saved.timer.dur;
+    S.timer.left = saved.timer.left;
+    S.timer.running = false;
+    S.poemState = saved.poemState;
+    S.topicIdx = saved.topicIdx;
+    S.wordIdx = saved.wordIdx;
+    S.done.poems = new Set(saved.done.poems || []);
+    S.done.topics = new Set(saved.done.topics || []);
+    S.done.words = new Set(saved.done.words || []);
+    S.gameStarted = saved.gameStarted;
+    S.lastScreen = saved.lastScreen;
+    
+    refreshNames();
+    updateScores();
+    renderCards('A');
+    renderCards('B');
+    
+    $('panelA').classList.toggle('turn', S.turn==='A');
+    $('panelB').classList.toggle('turn', S.turn==='B');
+    
+    if (S.bellLock) {
+      const t = S.bellLock;
+      const name = S.teams[t].name;
+      const color = t==='A'?'var(--teamA)':'var(--teamB)';
+      $('bell-status').innerHTML=`🔔 الأسبقية: <span style="color:${color}">${name}</span>`;
+      $('bellBtn'+t).classList.add('won');
+    }
+    
+    const screenId = saved.currentScreen || 's-rules';
+    showScreen(screenId);
+    
+    if (screenId === 's-r1') {
+      renderR1();
+    } else if (screenId === 's-r2-list') {
+      renderPoemGrid();
+    } else if (screenId === 's-r2-play') {
+      renderPoemPlay();
+    } else if (screenId === 's-r3-list') {
+      renderTopicGrid();
+    } else if (screenId === 's-r3-play') {
+      const idx = S.topicIdx !== undefined ? S.topicIdx : 0;
+      $('r3-word').textContent=DATA.topics[idx];
+      $('r3-counter').textContent=`التحدي الموضوعي · الموضوع ${idx+1} من ${DATA.topics.length} · أبيات في موضوع:`;
+      const btn=$('btnNextTopic');
+      btn.disabled = idx>=DATA.topics.length-1;
+      btn.textContent = idx>=DATA.topics.length-1 ? 'انتهت المواضيع ✓' : 'الموضوع التالي ⏭';
+    } else if (screenId === 's-r4-list') {
+      renderWordGrid();
+    } else if (screenId === 's-r4-play') {
+      const idx = S.wordIdx !== undefined ? S.wordIdx : 0;
+      $('r4-word').textContent=DATA.words[idx];
+      $('r4-counter').innerHTML=`الضربة القاضية · الكلمة ${idx+1} من ${DATA.words.length} · بيتٌ فيه كلمة: <b style="color:var(--gold-bright)">الأسبقية بالجرس 🔔</b>`;
+      const btn=$('btnNextWord');
+      btn.disabled = idx>=DATA.words.length-1;
+      btn.textContent = idx>=DATA.words.length-1 ? 'انتهت الكلمات ✓' : 'الكلمة التالية ⏭';
+    }
+    
+    drawTimer();
+  } catch (e) {
+    console.error("Error loading state:", e);
+  }
+}
+
+function resetTournament() {
+  if (confirm("هل أنت متأكد من تصفير المسابقة والبدء من جديد؟ سيتم حذف جميع النقاط والبطاقات والتقدم الحالي.")) {
+    localStorage.removeItem('bawsala_duel_state');
+    location.reload();
+  }
+}
+
 /* ================= الأصوات (WebAudio) ================= */
 let AC = null;
 function audio(){ if(!AC) AC = new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended') AC.resume(); return AC; }
@@ -690,6 +800,7 @@ function showScreen(id){
   $('topbar').classList.toggle('visible', started && !clean);
   $('hostbar').classList.toggle('visible', started && !clean);
   if(id==='s-winner') showWinner();
+  saveState();
 }
 function goto(key){
   if(key.startsWith('intro-')){ openRoundIntro(+key.split('-')[1]); }
@@ -726,9 +837,18 @@ function startGame(){
   S.teams.B.name = $('inNameB').value.trim() || 'الفريق الثاني';
   S.teams.A.cards = +$('pcA').textContent;
   S.teams.B.cards = +$('pcB').textContent;
+  S.teams.A.score = 0; S.teams.A.burned = 0;
+  S.teams.B.score = 0; S.teams.B.burned = 0;
+  S.round = 1;
+  S.turn = null;
+  S.bellLock = null;
+  S.done.poems.clear();
+  S.done.topics.clear();
+  S.done.words.clear();
   S.gameStarted = true;
   refreshNames(); renderCards('A'); renderCards('B'); updateScores();
   showScreen('s-rules');
+  saveState();
 }
 function refreshNames(){
   $('nameA').textContent=S.teams.A.name; $('nameB').textContent=S.teams.B.name;
@@ -743,6 +863,7 @@ function updateScores(){
 function changeScore(t,d){
   S.teams[t].score=Math.max(0,S.teams[t].score+d); updateScores();
   if(d>0){ flashPanel(t); SFX.award(); }
+  saveState();
 }
 function awardPoint(t){
   const pts=DATA.rounds[S.round].pts;
@@ -753,6 +874,7 @@ function awardPoint(t){
     const st=S.poemState, p=DATA.poems[st.idx];
     if(st.revealed<p.lines.length){ st.revealed++; renderPoemPlay(); resetTimer(); }
   }
+  saveState();
 }
 function flashPanel(t){
   const p=$('panel'+t); p.classList.remove('flash'); p.offsetHeight; p.classList.add('flash');
@@ -762,6 +884,7 @@ function setTurn(t, force){
   else S.turn = (S.turn===t)? null : t;
   $('panelA').classList.toggle('turn', S.turn==='A');
   $('panelB').classList.toggle('turn', S.turn==='B');
+  saveState();
 }
 
 /* ▶ نقل الدور لفريق وتشغيل المؤقت مباشرة */
@@ -786,6 +909,7 @@ function drawTurn(){
       drawing=false; SFX.award(); flashPanel(cur);
       const color = cur==='A'?'var(--teamA)':'var(--teamB)';
       $('bell-status').innerHTML=`🎲 يبدأ: <span style="color:${color}">${S.teams[cur].name}</span>`;
+      saveState();
     }
   })();
 }
@@ -803,13 +927,14 @@ function renderCards(t){
       if(i<team.burned){ team.burned--; }
       else { team.burned++; SFX.burn(); }
       renderCards(t);
+      saveState();
     };
     wrap.appendChild(c);
   }
 }
 function burnCard(t){
   const team=S.teams[t];
-  if(team.burned<team.cards){ team.burned++; SFX.burn(); renderCards(t); }
+  if(team.burned<team.cards){ team.burned++; SFX.burn(); renderCards(t); saveState(); }
 }
 
 /* ================= المؤقت / البوصلة ================= */
@@ -847,10 +972,12 @@ function toggleTimer(){
     $('btnTimer').textContent='⏸ إيقاف مؤقت';
     requestAnimationFrame(tickLoop);
   }
+  saveState();
 }
 function resetTimer(){
   const t=S.timer; t.running=false; t.left=t.dur; lastWholeSec=null;
   $('btnTimer').textContent='▶ تشغيل المؤقت'; drawTimer();
+  saveState();
 }
 
 /* ================= الجرس ================= */
@@ -866,10 +993,12 @@ function ringBell(t){
   const ef=$('edge-flash');
   ef.style.background=`radial-gradient(120% 120% at ${t==='A'?'100%':'0%'} 50%, ${t==='A'?'rgba(217,113,59,.5)':'rgba(63,168,184,.5)'} 0%, transparent 60%)`;
   ef.classList.remove('on'); ef.offsetHeight; ef.classList.add('on');
+  saveState();
 }
 function resetBell(){
   S.bellLock=null; $('bell-status').textContent='';
   $('bellBtnA').classList.remove('won'); $('bellBtnB').classList.remove('won');
+  saveState();
 }
 
 /* ================= الجولة 1 ================= */
@@ -922,6 +1051,7 @@ function revealNext(){
   const st=S.poemState, p=DATA.poems[st.idx];
   if(st.revealed<p.lines.length){ st.revealed++; renderPoemPlay(); resetTimer(); }
   else if(st.idx<DATA.poems.length-1){ openPoem(st.idx+1); }
+  saveState();
 }
 
 /* ================= الجولة 3 ================= */
@@ -1072,6 +1202,7 @@ document.addEventListener('keydown',e=>{
     g.appendChild(l);
   }
   drawTimer();
+  loadState();
 })();
 </script>
 </body>
