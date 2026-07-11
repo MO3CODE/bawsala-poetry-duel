@@ -355,3 +355,174 @@ h1.big-title{
 
 /* زخرفة فاصلة */
 .ornament{color:var(--gold);font-size:clamp(18px,1.6vw,26px);letter-spacing:.5em;margin:1.5vh 0;opacity:.7}
+
+/* =====================================================
+   📱 RESPONSIVE — تابلت وهاتف
+   ===================================================== */
+
+/* إلغاء تأثير الضغط الأزرق على الشاشات اللمسية */
+*{ -webkit-tap-highlight-color:transparent }
+button{ touch-action:manipulation }
+
+/* ====== تابلت كبير (≤ 1024px) ====== */
+@media (max-width:1024px){
+  .select-grid.cols-5{grid-template-columns:repeat(3,1fr)}
+  h1.big-title{font-size:clamp(36px,5.5vw,80px)}
+  .mega-word{font-size:clamp(60px,11vw,160px)}
+}
+
+/* ====== تابلت (≤ 768px) ====== */
+@media (max-width:768px){
+
+  /* السماح بالتمرير داخل الشاشات */
+  .screen{
+    overflow-y:auto;
+    justify-content:flex-start;
+    padding:2vh 4vw 3vh;
+  }
+  .screen.active{ display:flex }
+
+  /* --- الشريط العلوي: تحويله لصفين --- */
+  #topbar{
+    flex-wrap:wrap;
+    gap:6px;
+    padding:8px 10px 0;
+  }
+
+  /* الفريقان يأخذان العرض كاملاً في صف */
+  #topbar .team-panel{
+    flex:1 1 calc(50% - 3px);
+    min-width:0;
+    padding:6px 8px;
+  }
+
+  /* البوصلة في الصف الثاني وسط */
+  #compass-wrap{
+    order:99;
+    width:100%;
+    flex-direction:row;
+    justify-content:center;
+    gap:12px;
+    min-width:unset;
+    padding-bottom:6px;
+  }
+  #compass{
+    width:clamp(70px,16vw,110px);
+    height:clamp(70px,16vw,110px);
+  }
+  #timer-num{font-size:clamp(22px,5vw,40px)}
+  #bell-status{font-size:11px;min-height:1.1em}
+
+  /* أرقام النقاط أصغر */
+  .team-score{font-size:clamp(26px,6vw,44px)}
+  .team-name{font-size:clamp(13px,3vw,20px)}
+  .score-btns button{width:28px;height:26px;font-size:15px}
+  .bell-btn{padding:8px 10px;font-size:14px;border-radius:10px}
+  .bell-btn .key-hint{display:none} /* إخفاء تلميح الكيبورد على اللمس */
+  .turn-pill{font-size:11px;padding:3px 8px}
+  .help-card{width:20px;height:28px;font-size:12px}
+
+  /* --- شاشة الإعداد --- */
+  .setup-form{flex-direction:column;gap:16px;margin-top:3vh}
+  .team-input-card{padding:16px 14px}
+  .players-row{gap:12px}
+  .players-row button{width:44px;height:44px}
+  #logo-hero{width:clamp(90px,20vw,140px)}
+  h1.big-title{font-size:clamp(32px,7vw,60px)}
+  .btn-primary{padding:14px 6vw;font-size:clamp(16px,4vw,22px);margin-top:3vh}
+  .btn-secondary{padding:10px 4vw;font-size:clamp(13px,3.5vw,17px)}
+
+  /* --- شاشة القوانين --- */
+  .rules-list{gap:12px;margin-top:2vh}
+  .rule-item{gap:12px;padding:12px 14px}
+  .rule-text{font-size:clamp(14px,3.5vw,20px);line-height:1.7}
+  .rule-icon{font-size:clamp(20px,5vw,30px)}
+
+  /* --- مقدمة الجولات --- */
+  .round-desc{font-size:clamp(15px,3.5vw,22px);line-height:1.7;margin-top:1.5vh}
+  .round-meta{gap:3vw;margin-top:2vh}
+  .meta-chip .mc-val{font-size:clamp(20px,5vw,32px)}
+
+  /* --- عرض الأبيات --- */
+  .verse{font-size:clamp(20px,5vw,36px);line-height:1.9}
+  .verse.prev{font-size:clamp(17px,4vw,28px)}
+  .verse.current{font-size:clamp(22px,5.5vw,38px)}
+  .poem-stage.long .verse.prev{font-size:clamp(14px,3.5vw,22px)}
+  .poem-stage.long .verse.current{font-size:clamp(18px,4.5vw,30px)}
+  .stage-actions{gap:8px;margin-top:2vh}
+  .btn-reveal{padding:10px 4vw;font-size:clamp(14px,3.5vw,19px)}
+  .btn-award{padding:10px 3.5vw;font-size:clamp(14px,3.5vw,19px)}
+
+  /* --- شبكات الاختيار --- */
+  .select-grid{gap:10px;margin-top:2vh}
+  .select-grid.cols-5{grid-template-columns:repeat(2,1fr)}
+  .select-grid.cols-3{grid-template-columns:repeat(2,1fr)}
+  .pick-card{padding:14px 10px;min-height:10vh;font-size:clamp(15px,3.5vw,22px)}
+  .mega-word{font-size:clamp(52px,14vw,130px)}
+
+  /* --- شاشة الفائز --- */
+  #winner-name{font-size:clamp(38px,10vw,80px)}
+  .final-scores{flex-direction:column;gap:12px;margin-top:2.5vh;width:min(400px,90vw)}
+  .final-card{min-width:unset;width:100%;padding:16px 5vw}
+  .final-card .fc-score{font-size:clamp(40px,10vw,80px)}
+
+  /* --- شريط المسيّر: قابل للتمرير --- */
+  #hostbar{
+    overflow-x:auto;
+    overflow-y:hidden;
+    flex-wrap:nowrap;
+    gap:5px;
+    padding:7px 10px;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  #hostbar::-webkit-scrollbar{display:none}
+  .host-tab,.host-btn{
+    font-size:12px;
+    padding:7px 10px;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .host-sep{margin:0 2px}
+  .spacer{display:none} /* إزالة المساحة الفارغة */
+}
+
+/* ====== هاتف صغير (≤ 480px) ====== */
+@media (max-width:480px){
+
+  /* الشريط العلوي أكثر إحكاماً */
+  #topbar .team-panel{padding:5px 6px;gap:5px}
+  .team-score{font-size:clamp(24px,7vw,38px)}
+  .team-name{font-size:11px}
+  .bell-btn{padding:6px 8px;font-size:13px;border-radius:9px;gap:4px}
+  .score-btns button{width:26px;height:24px;font-size:14px}
+  .cards-wrap{gap:3px}
+  .help-card{width:18px;height:25px;font-size:10px}
+
+  /* الشبكات: عمودان دائماً */
+  .select-grid.cols-5,
+  .select-grid.cols-3,
+  .select-grid.cols-2{grid-template-columns:repeat(2,1fr)}
+
+  /* الكلمة الكبيرة */
+  .mega-word{font-size:clamp(44px,16vw,100px)}
+
+  /* الأبيات */
+  .verse{font-size:clamp(18px,5.5vw,30px);line-height:1.8}
+  .verse.current{font-size:clamp(20px,6vw,33px)}
+
+  /* الشريط السفلي */
+  .host-tab,.host-btn{font-size:11px;padding:6px 8px}
+}
+
+/* ====== ضمان ظهور محتوى الشاشة بشكل كامل في الأوضاع المصغرة ====== */
+@media (max-height:500px) and (orientation:landscape){
+  #topbar{padding:4px 8px 0}
+  #compass{width:60px;height:60px}
+  #timer-num{font-size:20px}
+  .screen{padding:1vh 3vw;justify-content:center}
+  h1.big-title{font-size:clamp(22px,4vw,40px)}
+  .mega-word{font-size:clamp(36px,8vw,70px)}
+  .round-desc{font-size:clamp(13px,2vw,18px);margin-top:1vh}
+  .btn-primary{margin-top:1.5vh;padding:10px 4vw}
+}
