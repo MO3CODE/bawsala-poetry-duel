@@ -1,255 +1,296 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>المساجلة الشعرية — نادي بوصلة الثقافي</title>
-<meta name="description" content="تطبيق المساجلة الشعرية لنادي بوصلة الثقافي — أربع جولات شعرية تنافسية بين فريقين">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700&family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المساجلة الشعرية — نادي بوصلة الثقافي</title>
+  <meta name="description" content="تطبيق المساجلة الشعرية لنادي بوصلة الثقافي — أربع جولات شعرية تنافسية بين فريقين">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700&family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
-<div id="edge-flash"></div>
-<canvas id="confetti-canvas"></canvas>
+  <div id="edge-flash"></div>
+  <canvas id="confetti-canvas"></canvas>
 
-<div id="app">
+  <div id="app">
 
-  <!-- ======= الشريط العلوي ======= -->
-  <div id="topbar">
-    <div class="team-panel" data-team="A" id="panelA">
-      <div class="score-btns">
-        <button onclick="changeScore('A',1)" title="إضافة نقطة">+</button>
-        <button onclick="changeScore('A',-1)" title="خصم نقطة">−</button>
+    <!-- ======= الشريط العلوي ======= -->
+    <div id="topbar">
+      <div class="team-panel" data-team="A" id="panelA">
+        <div class="score-btns">
+          <button onclick="changeScore('A',1)" title="إضافة نقطة">+</button>
+          <button onclick="changeScore('A',-1)" title="خصم نقطة">−</button>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div class="team-name" id="nameA">الفريق الأول</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+            <button class="turn-pill" onclick="setTurn('A')">الدور</button>
+            <div class="cards-wrap" id="cardsA" title="بطاقات الاستعانة بصديق"></div>
+          </div>
+        </div>
+        <div class="team-score" id="scoreA">0</div>
+        <button class="bell-btn" data-team="A" id="bellBtnA" onclick="ringBell('A')">🔔 <span
+            class="key-hint">1</span></button>
       </div>
-      <div style="flex:1;min-width:0">
-        <div class="team-name" id="nameA">الفريق الأول</div>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
-          <button class="turn-pill" onclick="setTurn('A')">الدور</button>
-          <div class="cards-wrap" id="cardsA" title="بطاقات الاستعانة بصديق"></div>
+
+      <div id="compass-wrap">
+        <div id="compass">
+          <svg viewBox="0 0 200 200">
+            <defs>
+              <radialGradient id="dialGrad" cx="50%" cy="45%" r="60%">
+                <stop offset="0%" stop-color="#1B2E4C" />
+                <stop offset="100%" stop-color="#0E1B30" />
+              </radialGradient>
+            </defs>
+            <circle cx="100" cy="100" r="94" fill="url(#dialGrad)" stroke="#25395C" stroke-width="2" />
+            <g id="ticks" stroke="#3A507A" stroke-width="2"></g>
+            <!-- رؤوس البوصلة -->
+            <g fill="#CFA349" font-size="15" font-weight="bold" text-anchor="middle" font-family="Tajawal">
+              <text x="100" y="26">ش</text><text x="100" y="186">ج</text>
+              <text x="182" y="106">ق</text><text x="18" y="106">غ</text>
+            </g>
+            <circle cx="100" cy="100" r="80" fill="none" stroke="#22344F" stroke-width="7" />
+            <circle id="ringProg" class="ring-progress" cx="100" cy="100" r="80" fill="none" stroke="#CFA349"
+              stroke-width="7" stroke-linecap="round" stroke-dasharray="502.65" stroke-dashoffset="0"
+              transform="rotate(-90 100 100)" />
+            <g id="needle">
+              <polygon points="100,32 106,100 100,112 94,100" fill="#E8C577" />
+              <polygon points="100,168 106,100 100,112 94,100" fill="#3FA8B8" opacity=".85" />
+              <circle cx="100" cy="100" r="8" fill="#CFA349" stroke="#0A1422" stroke-width="3" />
+            </g>
+          </svg>
+          <div id="timer-num">10</div>
+        </div>
+        <div id="bell-status"></div>
+      </div>
+
+      <div class="team-panel" data-team="B" id="panelB">
+        <button class="bell-btn" data-team="B" id="bellBtnB" onclick="ringBell('B')">🔔 <span
+            class="key-hint">2</span></button>
+        <div class="team-score" id="scoreB">0</div>
+        <div style="flex:1;min-width:0;text-align:end">
+          <div class="team-name" id="nameB">الفريق الثاني</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px;justify-content:flex-end">
+            <div class="cards-wrap" id="cardsB" title="بطاقات الاستعانة بصديق"></div>
+            <button class="turn-pill" onclick="setTurn('B')">الدور</button>
+          </div>
+        </div>
+        <div class="score-btns">
+          <button onclick="changeScore('B',1)" title="إضافة نقطة">+</button>
+          <button onclick="changeScore('B',-1)" title="خصم نقطة">−</button>
         </div>
       </div>
-      <div class="team-score" id="scoreA">0</div>
-      <button class="bell-btn" data-team="A" id="bellBtnA" onclick="ringBell('A')">🔔 <span class="key-hint">1</span></button>
     </div>
 
-    <div id="compass-wrap">
-      <div id="compass">
-        <svg viewBox="0 0 200 200">
-          <defs>
-            <radialGradient id="dialGrad" cx="50%" cy="45%" r="60%">
-              <stop offset="0%" stop-color="#1B2E4C"/><stop offset="100%" stop-color="#0E1B30"/>
-            </radialGradient>
-          </defs>
-          <circle cx="100" cy="100" r="94" fill="url(#dialGrad)" stroke="#25395C" stroke-width="2"/>
-          <g id="ticks" stroke="#3A507A" stroke-width="2"></g>
-          <!-- رؤوس البوصلة -->
-          <g fill="#CFA349" font-size="15" font-weight="bold" text-anchor="middle" font-family="Tajawal">
-            <text x="100" y="26">ش</text><text x="100" y="186">ج</text>
-            <text x="182" y="106">ق</text><text x="18" y="106">غ</text>
-          </g>
-          <circle cx="100" cy="100" r="80" fill="none" stroke="#22344F" stroke-width="7"/>
-          <circle id="ringProg" class="ring-progress" cx="100" cy="100" r="80" fill="none"
-            stroke="#CFA349" stroke-width="7" stroke-linecap="round"
-            stroke-dasharray="502.65" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
-          <g id="needle">
-            <polygon points="100,32 106,100 100,112 94,100" fill="#E8C577"/>
-            <polygon points="100,168 106,100 100,112 94,100" fill="#3FA8B8" opacity=".85"/>
-            <circle cx="100" cy="100" r="8" fill="#CFA349" stroke="#0A1422" stroke-width="3"/>
-          </g>
-        </svg>
-        <div id="timer-num">10</div>
-      </div>
-      <div id="bell-status"></div>
-    </div>
+    <!-- ======= 0) شاشة البداية ======= -->
+    <section class="screen active" id="s-setup">
+      <img id="logo-hero" src="assets/logo.png" alt="شعار نادي بوصلة الثقافي">
 
-    <div class="team-panel" data-team="B" id="panelB">
-      <button class="bell-btn" data-team="B" id="bellBtnB" onclick="ringBell('B')">🔔 <span class="key-hint">2</span></button>
-      <div class="team-score" id="scoreB">0</div>
-      <div style="flex:1;min-width:0;text-align:end">
-        <div class="team-name" id="nameB">الفريق الثاني</div>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:4px;justify-content:flex-end">
-          <div class="cards-wrap" id="cardsB" title="بطاقات الاستعانة بصديق"></div>
-          <button class="turn-pill" onclick="setTurn('B')">الدور</button>
+      <h1 class="big-title">المُساجَلة الشِّعريّة</h1>
+      <div class="ornament">✦ ✦ ✦</div>
+      <p class="subtitle">أربع جولات .. فريقان .. وبيتٌ واحد يحسم النتيجة</p>
+
+      <div class="setup-form">
+        <div class="team-input-card" data-team="A">
+          <label>اسم الفريق الأول</label>
+          <input type="text" id="inNameA" placeholder="الفريق الأول" maxlength="24">
+          <label>عدد المتسابقين <span class="hint-small">(= عدد بطاقات الاستعانة بصديق)</span></label>
+          <div class="players-row">
+            <button onclick="stepPlayers('A',-1)">−</button>
+            <div class="pcount" id="pcA">2</div>
+            <button onclick="stepPlayers('A',1)">+</button>
+          </div>
+        </div>
+        <div class="team-input-card" data-team="B">
+          <label>اسم الفريق الثاني</label>
+          <input type="text" id="inNameB" placeholder="الفريق الثاني" maxlength="24">
+          <label>عدد المتسابقين <span class="hint-small">(= عدد بطاقات الاستعانة بصديق)</span></label>
+          <div class="players-row">
+            <button onclick="stepPlayers('B',-1)">−</button>
+            <div class="pcount" id="pcB">2</div>
+            <button onclick="stepPlayers('B',1)">+</button>
+          </div>
         </div>
       </div>
-      <div class="score-btns">
-        <button onclick="changeScore('B',1)" title="إضافة نقطة">+</button>
-        <button onclick="changeScore('B',-1)" title="خصم نقطة">−</button>
+      <button class="btn-primary" onclick="startGame()">ابدأ المسابقة 🧭</button>
+    </section>
+
+    <!-- ======= 1) القوانين ======= -->
+    <section class="screen" id="s-rules">
+      <div class="eyebrow">قبل أن نبدأ</div>
+      <h1 class="big-title" style="font-size:clamp(34px,4.5vw,72px)">قوانين اللعبة</h1>
+      <div class="rules-list">
+        <div class="rule-item">
+          <div class="rule-icon">🔁</div>
+          <div class="rule-text">ممنوع تكرار أي بيت في <b>نفس الجولة</b> — ويجوز تكراره في جولة مختلفة <b>لمرة واحدة
+              فقط</b>.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-icon">🤫</div>
+          <div class="rule-text">التشويش على الفريق الخصم <b>يمنحهم النقطة</b> حتى بدون جواب.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-icon">🔔</div>
+          <div class="rule-text">لاستباق الدور: الأولوية لمن <b>ضغط الجرس أولاً</b> — وليس لمن نطق أولاً.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-icon">🃏</div>
+          <div class="rule-text">لكل متسابق بطاقة <b>«استعانة بصديق»</b> لمرة واحدة: يختار شخصاً من الجمهور أو صديقاً
+            عبر الهاتف ليساعده.
+            <span class="warn-note">⚠️ إذا أجاب غير الصديق المُختار، أو كانت الإجابة جماعية → تسقط النقطة ويُحرق
+              الكرت.</span>
+          </div>
+        </div>
       </div>
+    </section>
+
+    <!-- ======= مقدمة جولة (قالب) ======= -->
+    <section class="screen" id="s-round-intro">
+      <div class="round-badge" id="ri-badge">الجولة الأولى</div>
+      <h1 class="big-title" id="ri-title" style="font-size:clamp(40px,6vw,100px)"></h1>
+      <p class="round-desc" id="ri-desc"></p>
+      <div class="round-meta">
+        <div class="meta-chip">
+          <div class="mc-val" id="ri-time">10ث</div>
+          <div class="mc-lbl">زمن الرد</div>
+        </div>
+        <div class="meta-chip">
+          <div class="mc-val" id="ri-pts">+1</div>
+          <div class="mc-lbl">نقاط الإجابة</div>
+        </div>
+      </div>
+      <button class="btn-primary" id="ri-go">ابدأ الجولة</button>
+    </section>
+
+    <!-- ======= الجولة 1: حرف وحرف ======= -->
+    <section class="screen" id="s-r1">
+      <div class="verse-counter">الجولة الأولى — حرف وحرف · نبدأ بهذه الأبيات ثم يتناوب الفريقان</div>
+      <div class="poem-stage" id="r1-verses"></div>
+      <div class="stage-actions">
+        <button class="btn-award" data-team="A" onclick="awardPoint('A')">نقطة لـ<span class="dyn-nameA">الفريق
+            الأول</span> +1</button>
+        <button class="btn-award" data-team="B" onclick="awardPoint('B')">نقطة لـ<span class="dyn-nameB">الفريق
+            الثاني</span> +1</button>
+      </div>
+    </section>
+
+    <!-- ======= الجولة 2: قائمة القصائد ======= -->
+    <section class="screen" id="s-r2-list">
+      <div class="round-badge">الجولة الثانية — أكمل الشطر</div>
+      <p class="subtitle">اختر القصيدة .. <b style="color:var(--gold-bright)">ونبّه الفريقين بعدد أبياتها قبل البدء</b>
+      </p>
+      <div class="select-grid cols-5" id="poemGrid"></div>
+    </section>
+
+    <!-- ======= الجولة 2: اللعب ======= -->
+    <section class="screen" id="s-r2-play">
+      <div class="verse-counter" id="r2-counter"></div>
+      <div class="poem-stage" id="r2-verses"></div>
+      <div class="stage-actions">
+        <button class="btn-reveal" id="btnReveal" onclick="revealNext()">كشف البيت التالي ⤵</button>
+        <button class="btn-award" data-team="A" onclick="awardPoint('A')">✓ لـ<span class="dyn-nameA">الفريق
+            الأول</span> +1</button>
+        <button class="btn-award" data-team="B" onclick="awardPoint('B')">✓ لـ<span class="dyn-nameB">الفريق
+            الثاني</span> +1</button>
+        <button class="btn-secondary" onclick="renderPoemGrid();showScreen('s-r2-list')">↩ قائمة القصائد</button>
+      </div>
+    </section>
+
+    <!-- ======= الجولة 3: المواضيع ======= -->
+    <section class="screen" id="s-r3-list">
+      <div class="round-badge">الجولة الثالثة — التحدي الموضوعي</div>
+      <p class="subtitle">اختر الموضوع .. وليأتِ كل فريق ببيتٍ فيه</p>
+      <div class="select-grid cols-5" id="topicGrid"></div>
+    </section>
+
+    <section class="screen" id="s-r3-play">
+      <div class="verse-counter" id="r3-counter">التحدي الموضوعي · أبيات في موضوع:</div>
+      <div class="mega-word" id="r3-word"></div>
+      <div class="stage-actions">
+        <button class="btn-reveal" id="btnNextTopic" onclick="nextTopic()">الموضوع التالي ⏭</button>
+        <button class="btn-award" data-team="A" onclick="awardPoint('A')">نقطة لـ<span class="dyn-nameA">الفريق
+            الأول</span> +1</button>
+        <button class="btn-award" data-team="B" onclick="awardPoint('B')">نقطة لـ<span class="dyn-nameB">الفريق
+            الثاني</span> +1</button>
+        <button class="btn-secondary" onclick="renderTopicGrid();showScreen('s-r3-list')">↩ المواضيع</button>
+      </div>
+    </section>
+
+    <!-- ======= الجولة 4: الضربة القاضية ======= -->
+    <section class="screen" id="s-r4-list">
+      <div class="round-badge">الجولة النهائية — الضربة القاضية ⚔️</div>
+      <p class="subtitle">اختر الكلمة .. والمطلوب بيتٌ يحتوي عليها — <b style="color:var(--gold-bright)">كل إجابة
+          بنقطتين!</b></p>
+      <div class="select-grid cols-3" id="wordGrid"></div>
+    </section>
+
+    <section class="screen" id="s-r4-play">
+      <div class="verse-counter" id="r4-counter">الضربة القاضية · بيتٌ فيه كلمة: <b
+          style="color:var(--gold-bright)">الأسبقية بالجرس 🔔</b></div>
+      <div class="mega-word" id="r4-word"></div>
+      <div class="stage-actions">
+        <button class="btn-reveal" id="btnNextWord" onclick="nextWord()">الكلمة التالية ⏭</button>
+        <button class="btn-award" data-team="A" onclick="awardPoint('A')">⚔️ لـ<span class="dyn-nameA">الفريق
+            الأول</span> +2</button>
+        <button class="btn-award" data-team="B" onclick="awardPoint('B')">⚔️ لـ<span class="dyn-nameB">الفريق
+            الثاني</span> +2</button>
+        <button class="btn-secondary" onclick="renderWordGrid();showScreen('s-r4-list')">&#x21A9; الكلمات</button>
+      </div>
+    </section>
+
+    <!-- ======= شاشة الفائز ======= -->
+    <section class="screen" id="s-winner">
+      <div id="winner-logo-slot"></div>
+      <div class="eyebrow">نادي بوصلة الثقافي · المساجلة الشعرية</div>
+      <div style="font-size:clamp(50px,7vw,120px)">🏆</div>
+      <h1 id="winner-name">الفريق الفائز</h1>
+      <div class="ornament">✦ ✦ ✦</div>
+      <div class="final-scores">
+        <div class="final-card" data-team="A">
+          <div class="fc-name" id="fcNameA"></div>
+          <div class="fc-score" id="fcScoreA">0</div>
+        </div>
+        <div class="final-card" data-team="B">
+          <div class="fc-name" id="fcNameB"></div>
+          <div class="fc-score" id="fcScoreB">0</div>
+        </div>
+      </div>
+      <button class="btn-secondary" style="margin-top:4vh" id="btnWinnerBack"
+        onclick="showScreen(window._S?.lastScreen||'s-rules')">↩ رجوع</button>
+      <div style="position:absolute;bottom:1.5vh;inset-inline-end:1.5vw;font-size:11px;color:var(--muted);opacity:.35">
+        Esc للرجوع</div>
+    </section>
+
+    <!-- ======= شريط المسيّر ======= -->
+    <div id="hostbar">
+      <button class="host-tab" data-goto="s-rules">📜 القوانين</button>
+      <button class="host-tab" data-goto="intro-1">ج1 حرف وحرف</button>
+      <button class="host-tab" data-goto="intro-2">ج2 أكمل الشطر</button>
+      <button class="host-tab" data-goto="intro-3">ج3 الموضوعي</button>
+      <button class="host-tab" data-goto="intro-4">ج4 القاضية</button>
+      <button class="host-tab" data-goto="s-winner">🏆 النتيجة</button>
+      <div class="host-sep"></div>
+      <button class="host-btn team-go" data-team="A" onclick="turnAndStart('A')">▶ دور <span class="dyn-nameA">الفريق
+          الأول</span></button>
+      <button class="host-btn team-go" data-team="B" onclick="turnAndStart('B')">▶ دور <span class="dyn-nameB">الفريق
+          الثاني</span></button>
+      <div class="host-sep"></div>
+      <button class="host-btn primary" id="btnTimer" onclick="toggleTimer()">▶ تشغيل المؤقت</button>
+      <button class="host-btn" onclick="resetTimer()">↺ إعادة</button>
+      <button class="host-btn" style="background:rgba(196,85,77,.2); border-color:var(--danger); color:var(--ivory);"
+        onclick="resetTournament()" title="تصفير المسابقة والبدء من جديد">🔄 لعبة جديدة</button>
+      <div class="spacer"></div>
+
+      <button class="host-btn" onclick="toggleFullscreen()">⛶ ملء الشاشة</button>
     </div>
   </div>
 
-  <!-- ======= 0) شاشة البداية ======= -->
-  <section class="screen active" id="s-setup">
-    <img id="logo-hero" src="assets/logo.png" alt="شعار نادي بوصلة الثقافي">
-
-    <h1 class="big-title">المُساجَلة الشِّعريّة</h1>
-    <div class="ornament">✦ ✦ ✦</div>
-    <p class="subtitle">أربع جولات .. فريقان .. وبيتٌ واحد يحسم النتيجة</p>
-
-    <div class="setup-form">
-      <div class="team-input-card" data-team="A">
-        <label>اسم الفريق الأول</label>
-        <input type="text" id="inNameA" placeholder="الفريق الأول" maxlength="24">
-        <label>عدد المتسابقين <span class="hint-small">(= عدد بطاقات الاستعانة بصديق)</span></label>
-        <div class="players-row">
-          <button onclick="stepPlayers('A',-1)">−</button>
-          <div class="pcount" id="pcA">2</div>
-          <button onclick="stepPlayers('A',1)">+</button>
-        </div>
-      </div>
-      <div class="team-input-card" data-team="B">
-        <label>اسم الفريق الثاني</label>
-        <input type="text" id="inNameB" placeholder="الفريق الثاني" maxlength="24">
-        <label>عدد المتسابقين <span class="hint-small">(= عدد بطاقات الاستعانة بصديق)</span></label>
-        <div class="players-row">
-          <button onclick="stepPlayers('B',-1)">−</button>
-          <div class="pcount" id="pcB">2</div>
-          <button onclick="stepPlayers('B',1)">+</button>
-        </div>
-      </div>
-    </div>
-    <button class="btn-primary" onclick="startGame()">ابدأ المسابقة 🧭</button>
-  </section>
-
-  <!-- ======= 1) القوانين ======= -->
-  <section class="screen" id="s-rules">
-    <div class="eyebrow">قبل أن نبدأ</div>
-    <h1 class="big-title" style="font-size:clamp(34px,4.5vw,72px)">قوانين اللعبة</h1>
-    <div class="rules-list">
-      <div class="rule-item"><div class="rule-icon">🔁</div>
-        <div class="rule-text">ممنوع تكرار أي بيت في <b>نفس الجولة</b> — ويجوز تكراره في جولة مختلفة <b>لمرة واحدة فقط</b>.</div></div>
-      <div class="rule-item"><div class="rule-icon">🤫</div>
-        <div class="rule-text">التشويش على الفريق الخصم <b>يمنحهم النقطة</b> حتى بدون جواب.</div></div>
-      <div class="rule-item"><div class="rule-icon">🔔</div>
-        <div class="rule-text">لاستباق الدور: الأولوية لمن <b>ضغط الجرس أولاً</b> — وليس لمن نطق أولاً.</div></div>
-      <div class="rule-item"><div class="rule-icon">🃏</div>
-        <div class="rule-text">لكل متسابق بطاقة <b>«استعانة بصديق»</b> لمرة واحدة: يختار شخصاً من الجمهور أو صديقاً عبر الهاتف ليساعده.
-          <span class="warn-note">⚠️ إذا أجاب غير الصديق المُختار، أو كانت الإجابة جماعية → تسقط النقطة ويُحرق الكرت.</span>
-        </div></div>
-    </div>
-  </section>
-
-  <!-- ======= مقدمة جولة (قالب) ======= -->
-  <section class="screen" id="s-round-intro">
-    <div class="round-badge" id="ri-badge">الجولة الأولى</div>
-    <h1 class="big-title" id="ri-title" style="font-size:clamp(40px,6vw,100px)"></h1>
-    <p class="round-desc" id="ri-desc"></p>
-    <div class="round-meta">
-      <div class="meta-chip"><div class="mc-val" id="ri-time">10ث</div><div class="mc-lbl">زمن الرد</div></div>
-      <div class="meta-chip"><div class="mc-val" id="ri-pts">+1</div><div class="mc-lbl">نقاط الإجابة</div></div>
-    </div>
-    <button class="btn-primary" id="ri-go">ابدأ الجولة</button>
-  </section>
-
-  <!-- ======= الجولة 1: حرف وحرف ======= -->
-  <section class="screen" id="s-r1">
-    <div class="verse-counter">الجولة الأولى — حرف وحرف · نبدأ بهذه الأبيات ثم يتناوب الفريقان</div>
-    <div class="poem-stage" id="r1-verses"></div>
-    <div class="stage-actions">
-      <button class="btn-award" data-team="A" onclick="awardPoint('A')">نقطة لـ<span class="dyn-nameA">الفريق الأول</span> +1</button>
-      <button class="btn-award" data-team="B" onclick="awardPoint('B')">نقطة لـ<span class="dyn-nameB">الفريق الثاني</span> +1</button>
-    </div>
-  </section>
-
-  <!-- ======= الجولة 2: قائمة القصائد ======= -->
-  <section class="screen" id="s-r2-list">
-    <div class="round-badge">الجولة الثانية — أكمل الشطر</div>
-    <p class="subtitle">اختر القصيدة .. <b style="color:var(--gold-bright)">ونبّه الفريقين بعدد أبياتها قبل البدء</b></p>
-    <div class="select-grid cols-5" id="poemGrid"></div>
-  </section>
-
-  <!-- ======= الجولة 2: اللعب ======= -->
-  <section class="screen" id="s-r2-play">
-    <div class="verse-counter" id="r2-counter"></div>
-    <div class="poem-stage" id="r2-verses"></div>
-    <div class="stage-actions">
-      <button class="btn-reveal" id="btnReveal" onclick="revealNext()">كشف البيت التالي ⤵</button>
-      <button class="btn-award" data-team="A" onclick="awardPoint('A')">✓ لـ<span class="dyn-nameA">الفريق الأول</span> +1</button>
-      <button class="btn-award" data-team="B" onclick="awardPoint('B')">✓ لـ<span class="dyn-nameB">الفريق الثاني</span> +1</button>
-      <button class="btn-secondary" onclick="renderPoemGrid();showScreen('s-r2-list')">↩ قائمة القصائد</button>
-    </div>
-  </section>
-
-  <!-- ======= الجولة 3: المواضيع ======= -->
-  <section class="screen" id="s-r3-list">
-    <div class="round-badge">الجولة الثالثة — التحدي الموضوعي</div>
-    <p class="subtitle">اختر الموضوع .. وليأتِ كل فريق ببيتٍ فيه</p>
-    <div class="select-grid cols-5" id="topicGrid"></div>
-  </section>
-
-  <section class="screen" id="s-r3-play">
-    <div class="verse-counter" id="r3-counter">التحدي الموضوعي · أبيات في موضوع:</div>
-    <div class="mega-word" id="r3-word"></div>
-    <div class="stage-actions">
-      <button class="btn-reveal" id="btnNextTopic" onclick="nextTopic()">الموضوع التالي ⏭</button>
-      <button class="btn-award" data-team="A" onclick="awardPoint('A')">نقطة لـ<span class="dyn-nameA">الفريق الأول</span> +1</button>
-      <button class="btn-award" data-team="B" onclick="awardPoint('B')">نقطة لـ<span class="dyn-nameB">الفريق الثاني</span> +1</button>
-      <button class="btn-secondary" onclick="renderTopicGrid();showScreen('s-r3-list')">↩ المواضيع</button>
-    </div>
-  </section>
-
-  <!-- ======= الجولة 4: الضربة القاضية ======= -->
-  <section class="screen" id="s-r4-list">
-    <div class="round-badge">الجولة النهائية — الضربة القاضية ⚔️</div>
-    <p class="subtitle">اختر الكلمة .. والمطلوب بيتٌ يحتوي عليها — <b style="color:var(--gold-bright)">كل إجابة بنقطتين!</b></p>
-    <div class="select-grid cols-3" id="wordGrid"></div>
-  </section>
-
-  <section class="screen" id="s-r4-play">
-    <div class="verse-counter" id="r4-counter">الضربة القاضية · بيتٌ فيه كلمة: <b style="color:var(--gold-bright)">الأسبقية بالجرس 🔔</b></div>
-    <div class="mega-word" id="r4-word"></div>
-    <div class="stage-actions">
-      <button class="btn-reveal" id="btnNextWord" onclick="nextWord()">الكلمة التالية ⏭</button>
-      <button class="btn-award" data-team="A" onclick="awardPoint('A')">⚔️ لـ<span class="dyn-nameA">الفريق الأول</span> +2</button>
-      <button class="btn-award" data-team="B" onclick="awardPoint('B')">⚔️ لـ<span class="dyn-nameB">الفريق الثاني</span> +2</button>
-      <button class="btn-secondary" onclick="renderWordGrid();showScreen('s-r4-list')">&#x21A9; الكلمات</button>
-    </div>
-  </section>
-
-  <!-- ======= شاشة الفائز ======= -->
-  <section class="screen" id="s-winner">
-    <div id="winner-logo-slot"></div>
-    <div class="eyebrow">نادي بوصلة الثقافي · المساجلة الشعرية</div>
-    <div style="font-size:clamp(50px,7vw,120px)">🏆</div>
-    <h1 id="winner-name">الفريق الفائز</h1>
-    <div class="ornament">✦ ✦ ✦</div>
-    <div class="final-scores">
-      <div class="final-card" data-team="A">
-        <div class="fc-name" id="fcNameA"></div>
-        <div class="fc-score" id="fcScoreA">0</div>
-      </div>
-      <div class="final-card" data-team="B">
-        <div class="fc-name" id="fcNameB"></div>
-        <div class="fc-score" id="fcScoreB">0</div>
-      </div>
-    </div>
-    <button class="btn-secondary" style="margin-top:4vh" id="btnWinnerBack" onclick="showScreen(window._S?.lastScreen||'s-rules')">↩ رجوع</button>
-    <div style="position:absolute;bottom:1.5vh;inset-inline-end:1.5vw;font-size:11px;color:var(--muted);opacity:.35">Esc للرجوع</div>
-  </section>
-
-  <!-- ======= شريط المسيّر ======= -->
-  <div id="hostbar">
-    <button class="host-tab" data-goto="s-rules">📜 القوانين</button>
-    <button class="host-tab" data-goto="intro-1">ج1 حرف وحرف</button>
-    <button class="host-tab" data-goto="intro-2">ج2 أكمل الشطر</button>
-    <button class="host-tab" data-goto="intro-3">ج3 الموضوعي</button>
-    <button class="host-tab" data-goto="intro-4">ج4 القاضية</button>
-    <button class="host-tab" data-goto="s-winner">🏆 النتيجة</button>
-    <div class="host-sep"></div>
-    <button class="host-btn team-go" data-team="A" onclick="turnAndStart('A')">▶ دور <span class="dyn-nameA">الفريق الأول</span></button>
-    <button class="host-btn team-go" data-team="B" onclick="turnAndStart('B')">▶ دور <span class="dyn-nameB">الفريق الثاني</span></button>
-    <div class="host-sep"></div>
-    <button class="host-btn primary" id="btnTimer" onclick="toggleTimer()">▶ تشغيل المؤقت</button>
-    <button class="host-btn" onclick="resetTimer()">↺ إعادة</button>
-    <button class="host-btn" style="background:rgba(196,85,77,.2); border-color:var(--danger); color:var(--ivory);" onclick="resetTournament()" title="تصفير المسابقة والبدء من جديد">🔄 لعبة جديدة</button>
-    <div class="spacer"></div>
-
-    <button class="host-btn" onclick="toggleFullscreen()">⛶ ملء الشاشة</button>
-  </div>
-</div>
-
-<script type="module" src="js/main.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
+
 </html>

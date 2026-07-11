@@ -35,12 +35,16 @@ button:focus-visible{outline:2px solid var(--gold-bright)}
 input{font-family:var(--font-ui)}
 
 /* ====== هيكل عام ====== */
-#app{height:100vh;display:flex;flex-direction:column}
-.screen{display:none;flex:1;min-height:0;flex-direction:column;align-items:center;justify-content:center;padding:2.5vh 4vw;position:relative}
+#app{height:100vh;height:100dvh;width:100%;display:flex;flex-direction:column;overflow:hidden}
+.screen{display:none;flex:1;min-height:0;width:100%;flex-direction:column;align-items:center;justify-content:flex-start;padding:clamp(15px,2.5vh,35px) clamp(15px,4vw,50px);position:relative;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .screen.active{display:flex}
+/* محاذاة العناصر وتوسيطها عمودياً عندما تتسع الشاشة، والتمرير الآمن عند تجاوز الارتفاع */
+.screen > *:first-child{margin-top:auto}
+.screen > *:last-child{margin-bottom:auto}
 .fade-in{animation:fadeUp .55s cubic-bezier(.2,.7,.3,1) both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
 
 .eyebrow{
   font-size:clamp(14px,1.4vw,20px);letter-spacing:.35em;color:var(--gold);
@@ -58,6 +62,7 @@ h1.big-title{
 #topbar{
   display:none;align-items:stretch;gap:1.2vw;
   padding:1.4vh 1.4vw 0;
+  flex-wrap:wrap;justify-content:center;
 }
 #topbar.visible{display:flex}
 .team-panel{
@@ -357,91 +362,104 @@ h1.big-title{
 .ornament{color:var(--gold);font-size:clamp(18px,1.6vw,26px);letter-spacing:.5em;margin:1.5vh 0;opacity:.7}
 
 /* =====================================================
-   📱 RESPONSIVE — تابلت وهاتف
+   📱 RESPONSIVE — شامل لجميع الأجهزة والتابلت والهواتف
    ===================================================== */
 
-/* إلغاء تأثير الضغط الأزرق على الشاشات اللمسية */
+/* إلغاء تأثير الضغط الأزرق على الشاشات اللمسية وتحسين استجابة اللمس */
 *{ -webkit-tap-highlight-color:transparent }
 button{ touch-action:manipulation }
 
-/* ====== تابلت كبير (≤ 1024px) ====== */
-@media (max-width:1024px){
-  .select-grid.cols-5{grid-template-columns:repeat(3,1fr)}
-  h1.big-title{font-size:clamp(36px,5.5vw,80px)}
-  .mega-word{font-size:clamp(60px,11vw,160px)}
+/* ====== شاشات متوسطة ولاب توب صغير (≤ 1200px) ====== */
+@media (max-width:1200px){
+  .select-grid.cols-5{grid-template-columns:repeat(4,1fr)}
+  
+  /* جعل شريط المسيّر قابلاً للتمرير الأفقي بسلاسة دون التكدس في سطرين */
+  #hostbar{
+    overflow-x:auto;
+    overflow-y:hidden;
+    flex-wrap:nowrap;
+    gap:6px;
+    padding:8px 12px;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  #hostbar::-webkit-scrollbar{display:none}
+  .host-tab,.host-btn{
+    flex-shrink:0;
+    white-space:nowrap;
+  }
+  .spacer{display:none}
 }
 
-/* ====== تابلت (≤ 768px) ====== */
-@media (max-width:768px){
-
-  /* السماح بالتمرير داخل الشاشات */
-  .screen{
-    overflow-y:auto;
-    justify-content:flex-start;
-    padding:2vh 4vw 3vh;
-  }
-  .screen.active{ display:flex }
-
-  /* --- الشريط العلوي: تحويله لصفين --- */
+/* ====== أجهزة التابلت والآيباد عمودياً (≤ 1024px) ====== */
+@media (max-width:1024px){
   #topbar{
-    flex-wrap:wrap;
-    gap:6px;
-    padding:8px 10px 0;
+    gap:10px;
+    padding:10px 12px 0;
   }
-
-  /* الفريقان يأخذان العرض كاملاً في صف */
   #topbar .team-panel{
-    flex:1 1 calc(50% - 3px);
-    min-width:0;
-    padding:6px 8px;
+    flex:1 1 calc(50% - 6px);
+    min-width:280px;
+    padding:8px 12px;
   }
-
-  /* البوصلة في الصف الثاني وسط */
   #compass-wrap{
     order:99;
     width:100%;
     flex-direction:row;
     justify-content:center;
-    gap:12px;
-    min-width:unset;
+    gap:16px;
     padding-bottom:6px;
   }
   #compass{
-    width:clamp(70px,16vw,110px);
-    height:clamp(70px,16vw,110px);
+    width:clamp(80px,14vw,120px);
+    height:clamp(80px,14vw,120px);
   }
-  #timer-num{font-size:clamp(22px,5vw,40px)}
-  #bell-status{font-size:11px;min-height:1.1em}
+  #timer-num{font-size:clamp(26px,4.5vw,44px)}
+  #bell-status{font-size:13px;min-height:1.2em}
 
-  /* أرقام النقاط أصغر */
-  .team-score{font-size:clamp(26px,6vw,44px)}
-  .team-name{font-size:clamp(13px,3vw,20px)}
-  .score-btns button{width:28px;height:26px;font-size:15px}
+  .select-grid.cols-5,
+  .select-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+
+  .setup-form{flex-direction:column;width:min(650px,92vw);gap:16px}
+  h1.big-title{font-size:clamp(34px,5.5vw,76px)}
+  .mega-word{font-size:clamp(56px,11vw,140px)}
+}
+
+/* ====== تابلت صغير وهواتف كبيرة (≤ 768px) ====== */
+@media (max-width:768px){
+  /* الفريقان يأخذان العرض كاملاً لتجنب تداخل الأزرار مع النصوص */
+  #topbar .team-panel{
+    flex:1 1 100%;
+    min-width:100%;
+    padding:8px 10px;
+  }
+
+  .team-score{font-size:clamp(28px,6vw,46px)}
+  .team-name{font-size:clamp(14px,3.2vw,22px)}
+  .score-btns button{width:30px;height:26px;font-size:16px}
   .bell-btn{padding:8px 10px;font-size:14px;border-radius:10px}
   .bell-btn .key-hint{display:none} /* إخفاء تلميح الكيبورد على اللمس */
-  .turn-pill{font-size:11px;padding:3px 8px}
-  .help-card{width:20px;height:28px;font-size:12px}
+  .turn-pill{font-size:11px;padding:3px 10px}
+  .help-card{width:22px;height:30px;font-size:13px}
 
   /* --- شاشة الإعداد --- */
-  .setup-form{flex-direction:column;gap:16px;margin-top:3vh}
   .team-input-card{padding:16px 14px}
   .players-row{gap:12px}
   .players-row button{width:44px;height:44px}
   #logo-hero{width:clamp(90px,20vw,140px)}
-  h1.big-title{font-size:clamp(32px,7vw,60px)}
   .btn-primary{padding:14px 6vw;font-size:clamp(16px,4vw,22px);margin-top:3vh}
   .btn-secondary{padding:10px 4vw;font-size:clamp(13px,3.5vw,17px)}
 
   /* --- شاشة القوانين --- */
-  .rules-list{gap:12px;margin-top:2vh}
+  .rules-list{gap:12px;margin-top:2vh;width:100%}
   .rule-item{gap:12px;padding:12px 14px}
   .rule-text{font-size:clamp(14px,3.5vw,20px);line-height:1.7}
-  .rule-icon{font-size:clamp(20px,5vw,30px)}
+  .rule-icon{font-size:clamp(22px,5vw,32px)}
 
   /* --- مقدمة الجولات --- */
   .round-desc{font-size:clamp(15px,3.5vw,22px);line-height:1.7;margin-top:1.5vh}
   .round-meta{gap:3vw;margin-top:2vh}
-  .meta-chip .mc-val{font-size:clamp(20px,5vw,32px)}
+  .meta-chip .mc-val{font-size:clamp(22px,5vw,34px)}
 
   /* --- عرض الأبيات --- */
   .verse{font-size:clamp(20px,5vw,36px);line-height:1.9}
@@ -450,13 +468,12 @@ button{ touch-action:manipulation }
   .poem-stage.long .verse.prev{font-size:clamp(14px,3.5vw,22px)}
   .poem-stage.long .verse.current{font-size:clamp(18px,4.5vw,30px)}
   .stage-actions{gap:8px;margin-top:2vh}
-  .btn-reveal{padding:10px 4vw;font-size:clamp(14px,3.5vw,19px)}
-  .btn-award{padding:10px 3.5vw;font-size:clamp(14px,3.5vw,19px)}
+  .btn-reveal,.btn-award{padding:10px 4vw;font-size:clamp(14px,3.5vw,19px)}
 
   /* --- شبكات الاختيار --- */
-  .select-grid{gap:10px;margin-top:2vh}
-  .select-grid.cols-5{grid-template-columns:repeat(2,1fr)}
-  .select-grid.cols-3{grid-template-columns:repeat(2,1fr)}
+  .select-grid.cols-5,
+  .select-grid.cols-3,
+  .select-grid.cols-2{grid-template-columns:repeat(2,1fr);gap:10px}
   .pick-card{padding:14px 10px;min-height:10vh;font-size:clamp(15px,3.5vw,22px)}
   .mega-word{font-size:clamp(52px,14vw,130px)}
 
@@ -466,63 +483,43 @@ button{ touch-action:manipulation }
   .final-card{min-width:unset;width:100%;padding:16px 5vw}
   .final-card .fc-score{font-size:clamp(40px,10vw,80px)}
 
-  /* --- شريط المسيّر: قابل للتمرير --- */
-  #hostbar{
-    overflow-x:auto;
-    overflow-y:hidden;
-    flex-wrap:nowrap;
-    gap:5px;
-    padding:7px 10px;
-    -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
-  }
-  #hostbar::-webkit-scrollbar{display:none}
-  .host-tab,.host-btn{
-    font-size:12px;
-    padding:7px 10px;
-    white-space:nowrap;
-    flex-shrink:0;
-  }
-  .host-sep{margin:0 2px}
-  .spacer{display:none} /* إزالة المساحة الفارغة */
+  /* --- شريط المسيّر --- */
+  .host-tab,.host-btn{font-size:12px;padding:7px 10px}
 }
 
-/* ====== هاتف صغير (≤ 480px) ====== */
+/* ====== هواتف صغيرة (≤ 480px) ====== */
 @media (max-width:480px){
-
   /* الشريط العلوي أكثر إحكاماً */
-  #topbar .team-panel{padding:5px 6px;gap:5px}
+  #topbar .team-panel{padding:6px;gap:6px}
   .team-score{font-size:clamp(24px,7vw,38px)}
-  .team-name{font-size:11px}
-  .bell-btn{padding:6px 8px;font-size:13px;border-radius:9px;gap:4px}
+  .team-name{font-size:12px}
+  .bell-btn{padding:6px 8px;font-size:13px;border-radius:8px;gap:4px}
   .score-btns button{width:26px;height:24px;font-size:14px}
   .cards-wrap{gap:3px}
-  .help-card{width:18px;height:25px;font-size:10px}
+  .help-card{width:18px;height:26px;font-size:11px}
 
-  /* الشبكات: عمودان دائماً */
+  /* الشبكات: عمود واحد في الهواتف الصغيرة لضمان وضوح نصوص القصائد والمواضيع */
   .select-grid.cols-5,
   .select-grid.cols-3,
-  .select-grid.cols-2{grid-template-columns:repeat(2,1fr)}
+  .select-grid.cols-2{grid-template-columns:repeat(1,1fr);gap:8px}
 
-  /* الكلمة الكبيرة */
-  .mega-word{font-size:clamp(44px,16vw,100px)}
+  .mega-word{font-size:clamp(44px,15vw,95px)}
+  .verse{font-size:clamp(18px,5.5vw,28px);line-height:1.8}
+  .verse.current{font-size:clamp(20px,6vw,32px)}
 
-  /* الأبيات */
-  .verse{font-size:clamp(18px,5.5vw,30px);line-height:1.8}
-  .verse.current{font-size:clamp(20px,6vw,33px)}
-
-  /* الشريط السفلي */
   .host-tab,.host-btn{font-size:11px;padding:6px 8px}
 }
 
-/* ====== ضمان ظهور محتوى الشاشة بشكل كامل في الأوضاع المصغرة ====== */
-@media (max-height:500px) and (orientation:landscape){
-  #topbar{padding:4px 8px 0}
-  #compass{width:60px;height:60px}
+/* ====== ضمان ظهور محتوى الشاشة بشكل كامل في الأوضاع الأفقية القصيرة ====== */
+@media (max-height:520px) and (orientation:landscape){
+  #topbar{padding:4px 8px 0;gap:4px}
+  #topbar .team-panel{padding:4px 8px}
+  #compass{width:56px;height:56px}
   #timer-num{font-size:20px}
-  .screen{padding:1vh 3vw;justify-content:center}
+  .screen{padding:10px 3vw;justify-content:flex-start}
   h1.big-title{font-size:clamp(22px,4vw,40px)}
   .mega-word{font-size:clamp(36px,8vw,70px)}
   .round-desc{font-size:clamp(13px,2vw,18px);margin-top:1vh}
-  .btn-primary{margin-top:1.5vh;padding:10px 4vw}
+  .btn-primary{margin-top:1vh;padding:8px 4vw}
 }
+
